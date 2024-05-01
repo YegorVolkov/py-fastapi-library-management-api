@@ -41,14 +41,18 @@ def create_author(
 
 
 @app.get("/author/", response_model=list[schemas.Author])
-def read_all_authors(session: Session = Depends(session_manager)):
+def read_all_authors(session: Session = Depends(session_manager),
+                     skip: int = 0,
+                     limit: int = 2):
     search_for_author = crud.get_author_by_id(session=session,
-                                              author_id=1)
+                                              author_id=1, )
 
     if search_for_author is None:
         raise HTTPException(status_code=404, detail="Data Base is Empty")
 
-    return crud.get_authors_list(session=session)
+    return crud.get_authors_list(session=session,
+                                 skip=skip,
+                                 limit=limit)
 
 
 @app.get("/author/{author_id}", response_model=schemas.Author)
@@ -85,17 +89,23 @@ def create_book(
 
 
 @app.get("/book/", response_model=list[schemas.Book])
-def read_all_books(session: Session = Depends(session_manager)):
+def read_all_books(session: Session = Depends(session_manager),
+                   skip: int = 0,
+                   limit: int = 2):
     search_for_books = crud.get_books_by_id(session=session,
                                             book_id=1)
 
     if search_for_books is None:
-        raise HTTPException(status_code=404, detail="No books added yet")
+        raise HTTPException(status_code=404,
+                            detail="No books added yet")
 
-    return crud.get_books_list(session=session)
+    return crud.get_books_list(session=session,
+                               skip=skip,
+                               limit=limit)
 
 
-@app.get("/author/{author_id}/books/", response_model=list[schemas.Book])
+@app.get("/author/{author_id}/books/",
+         response_model=list[schemas.Book])
 def read_single_author_books(
         author_id: int,
         session: Session = Depends(session_manager)
@@ -104,13 +114,15 @@ def read_single_author_books(
                                               author_id=author_id)
 
     if search_for_author is None:
-        raise HTTPException(status_code=404, detail="Author not found")
+        raise HTTPException(status_code=404,
+                            detail="Author not found")
 
     search_for_author_books = crud.get_books_by_author_id(
         session=session,
         author_id=author_id
     )
     if len(search_for_author_books) == 0:
-        raise HTTPException(status_code=404, detail="Books not found")
+        raise HTTPException(status_code=404,
+                            detail="Books not found")
 
     return search_for_author_books

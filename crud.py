@@ -7,7 +7,7 @@ from db import models
 
 
 def create_author(session: Session,
-                  author: schemas.CreateAuthor):
+                  author: schemas.CreateAuthor) -> models.DBAuthor:
     db_author = models.DBAuthor(
         name=author.name,
         bio=author.bio
@@ -18,7 +18,9 @@ def create_author(session: Session,
     return db_author
 
 
-def get_authors_list(session: Session, skip: int = 0, limit: int = 2):
+def get_authors_list(session: Session,
+                     skip: int = 0,
+                     limit: int = 2):      # What proper type annotation here?
     return session.query(models.DBAuthor).offset(skip).limit(limit).all()
 
 
@@ -58,7 +60,7 @@ def create_book(session: Session,
 
 def get_books_list(session: Session,
                    skip: int = 0,
-                   limit: int = 10) -> list[models.DBBook]:
+                   limit: int = 2):    # What proper type annotation here?
     return session.query(models.DBBook).offset(skip).limit(limit).all()
 
 
@@ -83,14 +85,11 @@ def get_books_by_name(session: Session, book_title: str) -> models.DBBook:
 
 
 def get_books_by_author_id(session: Session,
-                           author_id: int,
-                           skip: int = 0,
-                           limit: int = 10,
-                           ) -> list[models.DBBook]:
+                           author_id: int) -> list[models.DBBook]:
     return (
         session.query(
             models.DBBook
         ).filter(
             models.DBBook.author_id == author_id
-        ).offset(skip).limit(limit).all()
+        ).all()
     )
